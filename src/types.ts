@@ -1,0 +1,94 @@
+export type Selection = "L" | "E" | "V";
+export type MatchStatus = "scheduled" | "live" | "finished" | "suspended" | "cancelled";
+export type RoundStatus = "open" | "in_play" | "closed" | "settled" | "cancelled";
+export type PaymentStatus = "draft" | "pending_review" | "approved" | "rejected";
+export type PrizeStatus = "unclaimed" | "pending_payment" | "paid";
+export type Role = "user" | "admin";
+
+export interface Profile {
+  id: string;
+  nickname: string;
+  fullName?: string;
+  phone?: string;
+  email: string;
+  password: string; // solo en modo demo local — en producción lo maneja Supabase Auth
+  role: Role;
+  createdAt: string;
+}
+
+export interface Round {
+  id: string;
+  name: string;
+  status: RoundStatus;
+  closeDate: string | null; // cierre manual opcional
+  isTest: boolean;
+  createdAt: string;
+}
+
+export interface Match {
+  id: string;
+  roundId: string;
+  home: string;
+  away: string;
+  matchDate: string; // ISO
+  status: MatchStatus;
+  result: Selection | null;
+}
+
+export interface PredictionItem {
+  matchId: string;
+  selection: Selection;
+}
+
+export interface Prediction {
+  id: string;
+  userId: string;
+  roundId: string;
+  name?: string | null; // nombre opcional del pronóstico
+  items: PredictionItem[];
+  totalHits: number;
+  paymentStatus: PaymentStatus;
+  receipt: string | null; // dataURL del comprobante
+  receiptName: string | null;
+  transferNotified: boolean;
+  createdAt: string;
+}
+
+export interface Prize {
+  id: string;
+  userId: string;
+  roundId: string;
+  winningPredictionId: string | null;
+  amount: number;
+  status: PrizeStatus;
+  cbuAlias: string | null;
+  claimedAt: string | null;
+  paidAt: string | null;
+  createdAt: string;
+}
+
+export interface Settings {
+  adminFullName: string;
+  adminAlias: string;
+  adminCbu: string;
+  entryFee: number;
+  telegramChatId: string;
+}
+
+export interface AppNotification {
+  id: string;
+  text: string;
+  createdAt: string;
+}
+
+export interface DB {
+  v: number;
+  profiles: Profile[];
+  rounds: Round[];
+  matches: Match[];
+  predictions: Prediction[];
+  prizes: Prize[];
+  settings: Settings;
+  notifications: AppNotification[];
+  currentUserId: string | null;
+}
